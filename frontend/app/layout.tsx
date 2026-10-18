@@ -12,6 +12,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "BRIMSEL Buddy — AI English Learning for Kids",
   description: "A gentle, progressive AI English learning companion for children under 7.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

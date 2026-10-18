@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Warm Circular Background Badge -->
+  <circle cx="50" cy="50" r="48" fill="#F59E0B" />
+  
+  <!-- Soft Ears -->
+  <circle cx="28" cy="26" r="14" fill="#FBBF24" />
+  <circle cx="28" cy="26" r="8" fill="#FDE68A" />
+  <circle cx="72" cy="26" r="14" fill="#FBBF24" />
+  <circle cx="72" cy="26" r="8" fill="#FDE68A" />
+
+  <!-- Head / Face -->
+  <circle cx="50" cy="56" r="34" fill="#F59E0B" />
+  <ellipse cx="50" cy="60" rx="26" ry="22" fill="#FEF3C7" />
+
+  <!-- Rosy Cheeks -->
+  <ellipse cx="34" cy="64" rx="5" ry="3.5" fill="#FB7185" opacity="0.8" />
+  <ellipse cx="66" cy="64" rx="5" ry="3.5" fill="#FB7185" opacity="0.8" />
+
+  <!-- Happy Curved Eyes ^ ^ -->
+  <path d="M34 52 C36 46, 42 46, 44 52" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" />
+  <path d="M56 52 C58 46, 64 46, 66 52" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round" />
+
+  <!-- Cute Nose -->
+  <polygon points="47,56 53,56 50,60" fill="#92400E" />
+
+  <!-- Happy Open Smiling Mouth -->
+  <path d="M42 64 Q50 75 58 64 Z" fill="#EF4444" stroke="#1E293B" stroke-width="2" stroke-linejoin="round" />
+
+  <!-- Little Sparkle -->
+  <path d="M78 20 Q78 28 86 28 Q78 28 78 36 Q78 28 70 28 Q78 28 78 20 Z" fill="#FFFFFF" />
+</svg>

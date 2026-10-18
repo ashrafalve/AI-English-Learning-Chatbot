@@ -1,22 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Volume2, Square } from "lucide-react";
 
 interface SpeechProps {
   textToRead: string;
 }
 
-/**
- * Strips emoji characters, special symbols, and excess whitespace so that
- * the speech engine only pronounces words without reading emoji names aloud.
- */
 function cleanTextForSpeech(text: string): string {
   return text
-    // Remove emojis and pictographs
     .replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, "")
-    // Remove extra punctuation clusters or dangling dashes
     .replace(/[\*\_~#]/g, "")
-    // Clean up multiple spaces
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -34,19 +28,17 @@ export const SpeechButton: React.FC<SpeechProps> = ({ textToRead }) => {
         const voices = window.speechSynthesis.getVoices();
         if (!voices || voices.length === 0) return;
 
-        // Prioritize friendly, natural English female voices available on Windows, Mac, iOS, Android, and Chrome
         const femaleVoiceNames = [
-          "zira", // Windows Microsoft Zira Desktop
-          "jenny", // Microsoft Jenny Online (Natural)
-          "aria", // Microsoft Aria Online
-          "samantha", // macOS / iOS Samantha
-          "karen", // macOS Karen
-          "victoria", // macOS Victoria
-          "google us english", // Chrome female voice
+          "zira",
+          "jenny",
+          "aria",
+          "samantha",
+          "karen",
+          "victoria",
+          "google us english",
           "female",
         ];
 
-        // 1. Try to find an English voice matching our preferred female names
         const bestFemaleVoice = voices.find((v) => {
           const nameLower = v.name.toLowerCase();
           const langLower = v.lang.toLowerCase();
@@ -59,7 +51,6 @@ export const SpeechButton: React.FC<SpeechProps> = ({ textToRead }) => {
           return;
         }
 
-        // 2. Fallback to any English voice
         const anyEnglishVoice = voices.find((v) => v.lang.toLowerCase().startsWith("en"));
         if (anyEnglishVoice) {
           setSelectedVoice(anyEnglishVoice);
@@ -82,7 +73,6 @@ export const SpeechButton: React.FC<SpeechProps> = ({ textToRead }) => {
 
     window.speechSynthesis.cancel();
 
-    // Clean emojis from the utterance text
     const spokenText = cleanTextForSpeech(textToRead);
     if (!spokenText) return;
 
@@ -92,9 +82,8 @@ export const SpeechButton: React.FC<SpeechProps> = ({ textToRead }) => {
       utterance.voice = selectedVoice;
     }
 
-    // Calibrate rate and pitch for a warm, gentle female teacher tone
-    utterance.rate = 0.88; // gentle, steady pace suitable for kids under 7
-    utterance.pitch = 1.2; // warm, cheerful, higher-pitch tone
+    utterance.rate = 0.88;
+    utterance.pitch = 1.2;
 
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
@@ -110,13 +99,17 @@ export const SpeechButton: React.FC<SpeechProps> = ({ textToRead }) => {
       onClick={toggleSpeak}
       title={isSpeaking ? "Stop listening" : "Listen aloud (Female voice)"}
       aria-label={isSpeaking ? "Stop speech" : "Read message aloud"}
-      className={`p-1.5 rounded-full transition text-xs flex items-center justify-center ${
+      className={`p-1.5 rounded-full transition-all text-xs flex items-center justify-center active:scale-95 ${
         isSpeaking
-          ? "bg-rose-100 text-rose-700 animate-pulse"
-          : "bg-slate-100 hover:bg-slate-200 text-slate-600"
+          ? "bg-rose-100 text-rose-700 animate-pulse ring-2 ring-rose-300"
+          : "bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900"
       }`}
     >
-      {isSpeaking ? "⏹️" : "🔊"}
+      {isSpeaking ? (
+        <Square className="w-3.5 h-3.5 fill-current" />
+      ) : (
+        <Volume2 className="w-3.5 h-3.5" />
+      )}
     </button>
   );
 };

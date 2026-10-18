@@ -6,6 +6,19 @@ import { useLearnerState } from "./hooks/useLearnerState";
 import { BuddyMascot } from "./components/BuddyMascot";
 import { LearningActivityPanel } from "./components/LearningActivityPanel";
 import { SpeechButton } from "./components/SpeechButton";
+import { StickerBadge } from "./components/StickerBadge";
+import { 
+  Send, 
+  RotateCcw, 
+  Sparkles, 
+  ShieldCheck, 
+  BookOpen, 
+  Gamepad2, 
+  HeartHandshake, 
+  MessageCircle, 
+  Loader2,
+  CheckCircle2
+} from "lucide-react";
 
 interface ChatMessage {
   id: string;
@@ -194,9 +207,9 @@ export default function Home() {
   }
 
   const levels = [
-    { id: "L1", title: "Beginner", icon: "🌱", color: "from-emerald-400 to-teal-500" },
-    { id: "L2", title: "Elementary", icon: "🚀", color: "from-sky-400 to-blue-500" },
-    { id: "L3", title: "Storyteller", icon: "👑", color: "from-amber-400 to-orange-500" },
+    { id: "L1", title: "Beginner", sticker: "seedling" },
+    { id: "L2", title: "Elementary", sticker: "rocket" },
+    { id: "L3", title: "Storyteller", sticker: "crown" },
   ];
 
   return (
@@ -211,8 +224,9 @@ export default function Home() {
                 <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-sky-700 via-sky-600 to-teal-600 bg-clip-text text-transparent tracking-tight">
                   BRIMSEL Buddy
                 </h1>
-                <span className="text-[11px] px-2.5 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-extrabold rounded-full border border-amber-200/60 shadow-xs">
-                  Age &lt; 7 English ✨
+                <span className="text-[11px] px-2.5 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-extrabold rounded-full border border-amber-200/60 shadow-xs flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-600" />
+                  <span>Age &lt; 7 English</span>
                 </span>
               </div>
               <p className="text-xs text-slate-500 hidden sm:block font-medium">
@@ -228,28 +242,31 @@ export default function Home() {
               <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-black text-xs shadow-xs">
                 {learnerState.current_level}
               </span>
-              <span className="text-xs font-bold text-slate-600 ml-1">
-                ⭐ {learnerState.mastery}/3 Stars
+              <span className="text-xs font-bold text-slate-600 ml-1 flex items-center gap-1.5">
+                <StickerBadge name="star" size="sm" />
+                <span>{learnerState.mastery}/3 Stars</span>
               </span>
               {learnerState.streak > 0 && (
-                <span className="text-xs font-bold text-orange-600 ml-1">
-                  🔥 {learnerState.streak} Streak
+                <span className="text-xs font-bold text-orange-600 ml-1 flex items-center gap-1.5">
+                  <StickerBadge name="flame" size="sm" />
+                  <span>{learnerState.streak} Streak</span>
                 </span>
               )}
             </div>
 
             <button
               onClick={() => setShowResetModal(true)}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition active:scale-95"
+              className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition active:scale-95 flex items-center gap-1.5"
               title="Reset Learning Progress"
             >
-              🔄 Reset
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Connection / API Error Banner if any */}
+      {/* Connection / API Error Banner */}
       {apiError && (
         <div className="bg-rose-50 border-b border-rose-200 px-4 py-2.5 text-center text-xs text-rose-700 font-bold flex items-center justify-center gap-2">
           <span>⚠️ {apiError}</span>
@@ -270,7 +287,9 @@ export default function Home() {
           <div className="bg-white rounded-3xl p-4 md:p-5 shadow-xs border border-amber-100">
             <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
               <span>Choose Your Level</span>
-              <span className="text-amber-500 font-bold">100% Free</span>
+              <span className="text-amber-500 font-bold flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-amber-500" /> 100% Free
+              </span>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {levels.map((lvl) => {
@@ -279,13 +298,13 @@ export default function Home() {
                   <button
                     key={lvl.id}
                     onClick={() => updateState({ current_level: lvl.id })}
-                    className={`py-3 px-2 rounded-2xl text-xs font-black transition-all flex flex-col items-center gap-1 border-2 relative overflow-hidden ${
+                    className={`py-3 px-2 rounded-2xl text-xs font-black transition-all flex flex-col items-center gap-1.5 border-2 relative overflow-hidden ${
                       isActive
                         ? "bg-gradient-to-b from-sky-600 to-sky-700 text-white border-sky-600 shadow-md scale-[1.02]"
                         : "bg-slate-50/80 text-slate-700 border-slate-200/80 hover:bg-sky-50/70 hover:border-sky-300"
                     }`}
                   >
-                    <span className="text-lg">{lvl.icon}</span>
+                    <StickerBadge name={lvl.sticker} size="md" />
                     <span className="text-xs font-black">{lvl.id}</span>
                     <span className="text-[10px] font-medium opacity-85">
                       {lvl.title}
@@ -302,8 +321,9 @@ export default function Home() {
               <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
                 {learnerState.current_level} Lesson Quests
               </span>
-              <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
-                ✨ {learnerState.completed_lessons.length} Finished
+              <span className="text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60 flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                <span>{learnerState.completed_lessons.length} Finished</span>
               </span>
             </div>
 
@@ -322,8 +342,14 @@ export default function Home() {
                         : "bg-slate-50/60 border-slate-200/80 text-slate-700 hover:bg-amber-50/50 hover:border-amber-200"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5 overflow-hidden">
-                      <span className="text-base">{isDone ? "⭐" : "📘"}</span>
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="shrink-0">
+                        {isDone ? (
+                          <StickerBadge name="star" size="sm" />
+                        ) : (
+                          <StickerBadge name="grammar" size="sm" />
+                        )}
+                      </div>
                       <div className="truncate">
                         <div className="truncate font-extrabold text-slate-800">
                           {lesson.question}
@@ -362,12 +388,12 @@ export default function Home() {
 
           {/* Chat Container */}
           <div className="bg-white rounded-3xl p-4 md:p-6 shadow-xs border border-amber-100 flex-1 flex flex-col min-h-[420px] max-h-[540px]">
-            {/* Mode & Inferred Mood Bar */}
+            {/* Mode Bar */}
             <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 text-xs">
               <div className="flex items-center gap-2">
                 <span className="text-slate-400 font-bold">Companion Mode:</span>
                 <span
-                  className={`px-3 py-0.5 rounded-full font-black text-[11px] shadow-xs border ${
+                  className={`px-3 py-1 rounded-full font-black text-[11px] shadow-xs border flex items-center gap-1.5 ${
                     activeMode === "LEARNING"
                       ? "bg-sky-50 text-sky-800 border-sky-200"
                       : activeMode === "SUPPORT"
@@ -377,14 +403,35 @@ export default function Home() {
                       : "bg-emerald-50 text-emerald-800 border-emerald-200"
                   }`}
                 >
-                  {activeMode === "LEARNING" && "📚 Learning"}
-                  {activeMode === "SUPPORT" && "💖 Gentle Support"}
-                  {activeMode === "ENGAGEMENT" && "🎮 Play & Games"}
-                  {activeMode === "CONVERSATION" && "💬 Chat & Stories"}
+                  {activeMode === "LEARNING" && (
+                    <>
+                      <BookOpen className="w-3.5 h-3.5 text-sky-600" />
+                      <span>Learning</span>
+                    </>
+                  )}
+                  {activeMode === "SUPPORT" && (
+                    <>
+                      <HeartHandshake className="w-3.5 h-3.5 text-pink-600" />
+                      <span>Gentle Support</span>
+                    </>
+                  )}
+                  {activeMode === "ENGAGEMENT" && (
+                    <>
+                      <Gamepad2 className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Play & Games</span>
+                    </>
+                  )}
+                  {activeMode === "CONVERSATION" && (
+                    <>
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Chat & Stories</span>
+                    </>
+                  )}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 font-medium hidden sm:inline">
-                Child-safe zone 🛡️
+              <span className="text-[11px] text-slate-400 font-medium hidden sm:flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Child-safe zone</span>
               </span>
             </div>
 
@@ -431,35 +478,38 @@ export default function Home() {
 
               {loading && (
                 <div className="self-start flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/60 animate-pulse">
-                  <span className="animate-spin text-sm">✨</span> Buddy is thinking...
+                  <Loader2 className="w-4 h-4 animate-spin text-sky-600" /> Buddy is thinking...
                 </div>
               )}
 
               <div ref={chatEndRef} />
             </div>
 
-            {/* Suggested Quick Replies Pills */}
+            {/* Suggested Quick Replies Pills with Stickers */}
             <div className="flex items-center gap-2 overflow-x-auto py-2.5 mt-2 border-t border-slate-100">
               <span className="text-[11px] text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">
                 Quick taps:
               </span>
               <button
                 onClick={() => sendMessage("Let's play a game!")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-amber-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs"
+                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 text-purple-900 border border-purple-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
               >
-                🎮 Play a game!
+                <StickerBadge name="game" size="sm" />
+                <span>Play a game!</span>
               </button>
               <button
                 onClick={() => sendMessage("What is a tiger?")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-900 border border-emerald-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs"
+                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-orange-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
               >
-                🐅 Ask about animals
+                <StickerBadge name="animals" size="sm" />
+                <span>Ask about animals</span>
               </button>
               <button
                 onClick={() => sendMessage("I don't understand")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-pink-50 to-rose-50 hover:from-pink-100 hover:to-rose-100 text-pink-900 border border-pink-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs"
+                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-pink-50 to-rose-50 hover:from-pink-100 hover:to-rose-100 text-pink-900 border border-pink-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
               >
-                💡 I need a hint
+                <StickerBadge name="hint" size="sm" />
+                <span>I need a hint</span>
               </button>
             </div>
 
@@ -477,9 +527,10 @@ export default function Home() {
               <button
                 onClick={() => sendMessage()}
                 disabled={loading || !input.trim()}
-                className="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 active:scale-95 text-white font-black px-6 py-3.5 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md text-sm"
+                className="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 active:scale-95 text-white font-black px-6 py-3.5 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md text-sm flex items-center gap-2"
               >
-                Send ➜
+                <span>Send</span>
+                <Send className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -490,7 +541,9 @@ export default function Home() {
       {showResetModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-pop-in">
           <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center flex flex-col gap-4">
-            <div className="text-5xl animate-bounce-subtle">🔄</div>
+            <div className="flex justify-center">
+              <StickerBadge name="hint" size="xl" className="animate-bounce-subtle" />
+            </div>
             <h3 className="text-lg font-black text-slate-800">Reset Learning Progress?</h3>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
               This will clear completed lessons and return your score back to Level 1.

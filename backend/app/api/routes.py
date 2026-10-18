@@ -18,7 +18,7 @@ def health():
         "status": "ok",
         "app_name": settings.app_name,
         "version": settings.app_version,
-        "ai_configured": bool(settings.bytez_api_key and settings.ai_enabled)
+        "ai_configured": bool(settings.openrouter_api_key and settings.ai_enabled)
     }
 
 
@@ -78,8 +78,55 @@ async def chat(req: ChatRequest):
     next_suggestion: str = "Try answering the lesson question."
     response_source: str = "rule-based"
 
-    # 4. Context-Aware Learning Evaluation (if an active lesson exists)
-    if lesson_id:
+    # 4. If child asks a curiosity question or general chat, answer with AI (even if lesson is open)
+    if intent in ["question", "general_chat"]:
+        mode = "CONVERSATION"
+        ai_reply = None
+        if settings.ai_enabled and settings.openrouter_api_key:
+            ai_reply = await bytez_provider.generate_chat_reply(
+                message=req.message,
+                recent_history=req.recent_history,
+                context_prompt=f"The child is learning English at Level {level}. Provide a 1-sentence warm, simple explanation."
+            )
+
+        if ai_reply:
+            reply = ai_reply
+            response_source = "openrouter-llm"
+        else:
+            if "tiger" in req.message.lower():
+                reply = "A tiger is a big, beautiful orange cat with black stripes that loves to roar! 🐅"
+            elif "sun" in req.message.lower():
+                reply = "The sun is a big, bright star in the sky that keeps us warm and gives us light! ☀️"
+            elif any(w in req.message.lower() for w in ["hello", "hi", "hey"]):
+                reply = "Hello there! I'm Buddy, your English learning pal. Are you ready for a fun lesson? 🌟"
+            else:
+                reply = f"That is a great question! English is full of wonders. Would you like to practice Level {level} lessons?"
+        next_suggestion = "Ask another question or try the lesson above!"
+
+    # 5. Specialized Mode Handling (Engagement, Emotional, Confusion)
+    elif intent == "engagement":
+        mode = "ENGAGEMENT"
+        reply = "Let's play a game! Can you name your favorite animal in English? 🐶🐱🦁"
+        next_suggestion = "Type an animal name like dog, lion, or elephant!"
+
+    elif intent == "emotional":
+        mode = "SUPPORT"
+        if emotion == "sad":
+            reply = "I'm so sorry you're feeling down. You are doing great today! 💛 Remember to talk to a parent or trusted adult for a warm hug."
+        elif emotion == "frustrated":
+            reply = "It's completely okay to feel frustrated! Learning new words takes time. Let's take a deep breath together. 🎈"
+        elif emotion == "excited":
+            reply = "Yay! Your happy energy makes me smile! Let's learn more awesome English words! 🌟"
+        next_suggestion = "Whenever you're ready, we can practice a fun word."
+
+    elif intent == "confusion":
+        mode = "SUPPORT"
+        reply = "No worries at all! Let's take it step by step. Would you like a gentle hint or an easier example? 💡"
+        next_suggestion = "Click the Hint button or try an easier question."
+
+    # 6. Otherwise, evaluate as an answer to the active lesson
+    elif lesson_id:
+        mode = "LEARNING"
         lesson = get_lesson(lesson_id)
         if lesson:
             eval_result = learning_service.evaluate(lesson_id, level, req.message, progress)
@@ -96,48 +143,6 @@ async def chat(req: ChatRequest):
                 next_suggestion = "Ready for the next fun lesson?"
             else:
                 next_suggestion = "Give it another try!"
-
-    # 5. Specialized Mode Handling (Engagement, Emotional, Confusion, Conversation)
-    if intent == "engagement":
-        reply = "Let's play a game! Can you name your favorite animal in English? 🐶🐱🦁"
-        next_suggestion = "Type an animal name like dog, lion, or elephant!"
-
-    elif intent == "emotional":
-        if emotion == "sad":
-            reply = "I'm so sorry you're feeling down. You are doing great today! 💛 Remember to talk to a parent or trusted adult for a warm hug."
-        elif emotion == "frustrated":
-            reply = "It's completely okay to feel frustrated! Learning new words takes time. Let's take a deep breath together. 🎈"
-        elif emotion == "excited":
-            reply = "Yay! Your happy energy makes me smile! Let's learn more awesome English words! 🌟"
-        next_suggestion = "Whenever you're ready, we can practice a fun word."
-
-    elif intent == "confusion":
-        reply = "No worries at all! Let's take it step by step. Would you like a gentle hint or an easier example? 💡"
-        next_suggestion = "Click the Hint button or try an easier question."
-
-    elif intent in ["question", "general_chat"] and not lesson_id:
-        # Check if AI provider can provide a natural conversation answer
-        ai_reply = None
-        if settings.ai_enabled and settings.bytez_api_key:
-            ai_reply = await bytez_provider.generate_chat_reply(
-                message=req.message,
-                recent_history=req.recent_history,
-                context_prompt=f"The child is at English Level {level}. Provide a 1-sentence warm explanation."
-            )
-
-        if ai_reply:
-            reply = ai_reply
-            response_source = "bytez-llm"
-        else:
-            if "tiger" in req.message.lower():
-                reply = "A tiger is a big, beautiful orange cat with black stripes that loves to roar! 🐅"
-            elif "sun" in req.message.lower():
-                reply = "The sun is a big, bright star in the sky that keeps us warm and gives us light! ☀️"
-            elif any(w in req.message.lower() for w in ["hello", "hi", "hey"]):
-                reply = "Hello there! I'm Buddy, your English learning pal. Are you ready for a fun lesson? 🌟"
-            else:
-                reply = f"That is a great question! English is full of wonders. Would you like to practice Level {level} lessons?"
-        next_suggestion = "Pick a lesson or ask another question!"
 
     # Final response sanitization and constraints
     final_reply = sanitize_reply(reply or "Great effort! Let's keep exploring English together! ✨")
