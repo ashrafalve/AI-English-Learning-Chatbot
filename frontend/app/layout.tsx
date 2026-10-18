@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -15,6 +15,20 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icon.svg",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BRIMSEL Buddy",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#FFFDF9",
 };
 
 export default function RootLayout({
@@ -24,7 +38,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${poppins.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans overflow-x-hidden w-full max-w-full">
+        {children}
+      </body>
     </html>
   );
 }

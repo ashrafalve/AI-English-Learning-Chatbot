@@ -17,7 +17,9 @@ import {
   HeartHandshake, 
   MessageCircle, 
   Loader2,
-  CheckCircle2
+  CheckCircle2,
+  ChevronDown,
+  Layers
 } from "lucide-react";
 
 interface ChatMessage {
@@ -42,6 +44,7 @@ export default function Home() {
   const [lastCorrect, setLastCorrect] = useState<boolean | null>(null);
   const [mascotMood, setMascotMood] = useState<"happy" | "thinking" | "support" | "excited">("happy");
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showMobileQuests, setShowMobileQuests] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -178,6 +181,7 @@ export default function Home() {
     setCurrentLesson(lesson);
     setLastHint(null);
     setLastCorrect(null);
+    setShowMobileQuests(false);
     updateState({ current_lesson_id: lesson.id });
 
     setMessages((prev) => [
@@ -213,54 +217,56 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 flex flex-col font-sans selection:bg-amber-100">
-      {/* Top Header */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-amber-100/90 sticky top-0 z-30 px-4 py-3 shadow-xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BuddyMascot mood={mascotMood} size={52} />
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl md:text-2xl font-black bg-gradient-to-r from-sky-700 via-sky-600 to-teal-600 bg-clip-text text-transparent tracking-tight">
+    <div className="min-h-screen bg-[#FFFDF9] text-slate-800 flex flex-col font-sans selection:bg-amber-100 w-full max-w-full overflow-x-hidden">
+      {/* Top Header - Mobile App Bar */}
+      <header className="bg-white/95 backdrop-blur-md border-b border-amber-100/90 sticky top-0 z-30 px-3.5 py-2.5 md:px-6 md:py-3 shadow-xs w-full max-w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
+          {/* Brand & Mascot */}
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="shrink-0">
+              <BuddyMascot mood={mascotMood} size={42} />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h1 className="text-base sm:text-xl md:text-2xl font-black bg-gradient-to-r from-sky-700 via-sky-600 to-teal-600 bg-clip-text text-transparent tracking-tight truncate">
                   BRIMSEL Buddy
                 </h1>
-                <span className="text-[11px] px-2.5 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-extrabold rounded-full border border-amber-200/60 shadow-xs flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-600" />
-                  <span>Age &lt; 7 English</span>
+                <span className="text-[10px] px-2 py-0.5 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 font-extrabold rounded-full border border-amber-200/60 shadow-xs flex items-center gap-0.5 shrink-0">
+                  <Sparkles className="w-2.5 h-2.5 text-amber-600" />
+                  <span>Age &lt; 7</span>
                 </span>
               </div>
-              <p className="text-xs text-slate-500 hidden sm:block font-medium">
-                Your gentle, cheerful English learning companion
+              <p className="text-[11px] text-slate-500 hidden sm:block font-medium truncate">
+                Your gentle English learning companion
               </p>
             </div>
           </div>
 
           {/* Header Stats Bar */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2.5 bg-gradient-to-r from-amber-50 to-orange-50/60 px-3.5 py-1.5 rounded-2xl border border-amber-200/70 shadow-xs">
-              <span className="text-xs font-black text-amber-800">Stage:</span>
-              <span className="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-black text-xs shadow-xs">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-50 to-orange-50/60 px-2 sm:px-3.5 py-1 rounded-xl sm:rounded-2xl border border-amber-200/70 shadow-xs text-xs">
+              <span className="px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-md font-black text-[10px] sm:text-xs">
                 {learnerState.current_level}
               </span>
-              <span className="text-xs font-bold text-slate-600 ml-1 flex items-center gap-1.5">
+              <span className="text-[11px] sm:text-xs font-bold text-slate-700 flex items-center gap-1">
                 <StickerBadge name="star" size="sm" />
-                <span>{learnerState.mastery}/3 Stars</span>
+                <span>{learnerState.mastery}/3</span>
               </span>
               {learnerState.streak > 0 && (
-                <span className="text-xs font-bold text-orange-600 ml-1 flex items-center gap-1.5">
+                <span className="text-[11px] sm:text-xs font-bold text-orange-600 hidden xs:flex items-center gap-1">
                   <StickerBadge name="flame" size="sm" />
-                  <span>{learnerState.streak} Streak</span>
+                  <span>{learnerState.streak}</span>
                 </span>
               )}
             </div>
 
             <button
               onClick={() => setShowResetModal(true)}
-              className="text-xs font-bold text-slate-400 hover:text-slate-600 px-2.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition active:scale-95 flex items-center gap-1.5"
+              className="text-slate-400 hover:text-slate-600 p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 transition active:scale-95 flex items-center gap-1 shrink-0"
               title="Reset Learning Progress"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span className="hidden sm:inline text-xs font-bold">Reset</span>
             </button>
           </div>
         </div>
@@ -268,23 +274,92 @@ export default function Home() {
 
       {/* Connection / API Error Banner */}
       {apiError && (
-        <div className="bg-rose-50 border-b border-rose-200 px-4 py-2.5 text-center text-xs text-rose-700 font-bold flex items-center justify-center gap-2">
+        <div className="bg-rose-50 border-b border-rose-200 px-3 py-2 text-center text-xs text-rose-700 font-bold flex items-center justify-center gap-2 w-full">
           <span>⚠️ {apiError}</span>
           <button
             onClick={() => loadLessons(learnerState.current_level)}
             className="underline hover:text-rose-900"
           >
-            Retry Connection
+            Retry
           </button>
         </div>
       )}
 
+      {/* Mobile Drawer / Level Selector Bar */}
+      <div className="lg:hidden bg-white border-b border-amber-100/80 px-3.5 py-2 flex items-center justify-between gap-2 shadow-xs">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {levels.map((lvl) => {
+            const isActive = learnerState.current_level === lvl.id;
+            return (
+              <button
+                key={lvl.id}
+                onClick={() => updateState({ current_level: lvl.id })}
+                className={`py-1.5 px-3 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border shrink-0 ${
+                  isActive
+                    ? "bg-sky-600 text-white border-sky-600 shadow-xs"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-sky-50"
+                }`}
+              >
+                <StickerBadge name={lvl.sticker} size="sm" />
+                <span>{lvl.id}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={() => setShowMobileQuests(!showMobileQuests)}
+          className="flex items-center gap-1 px-2.5 py-1.5 bg-amber-50 text-amber-900 border border-amber-200/80 rounded-xl text-xs font-black shrink-0 active:scale-95 transition"
+        >
+          <Layers className="w-3.5 h-3.5 text-amber-700" />
+          <span>Quests</span>
+          <ChevronDown className={`w-3 h-3 transition-transform ${showMobileQuests ? "rotate-180" : ""}`} />
+        </button>
+      </div>
+
+      {/* Mobile Quests Dropdown Drawer */}
+      {showMobileQuests && (
+        <div className="lg:hidden bg-amber-50/95 border-b border-amber-200 p-3 flex flex-col gap-2 max-h-[260px] overflow-y-auto animate-pop-in z-20">
+          <div className="text-[11px] font-black text-amber-900 uppercase tracking-wider flex items-center justify-between">
+            <span>{learnerState.current_level} Lessons</span>
+            <span className="text-[10px] text-emerald-700 font-bold bg-white px-2 py-0.5 rounded-full">
+              {learnerState.completed_lessons.length} Finished
+            </span>
+          </div>
+          {lessons.map((lesson) => {
+            const isSelected = currentLesson?.id === lesson.id;
+            const isDone = learnerState.completed_lessons.includes(lesson.id);
+            return (
+              <button
+                key={lesson.id}
+                onClick={() => handleSelectLesson(lesson)}
+                className={`text-left p-2.5 rounded-xl text-xs font-bold transition flex items-center justify-between border ${
+                  isSelected
+                    ? "bg-white border-amber-400 text-amber-950 shadow-xs"
+                    : "bg-white/80 border-slate-200 text-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-2 overflow-hidden truncate">
+                  <StickerBadge name={isDone ? "star" : "grammar"} size="sm" className="shrink-0" />
+                  <span className="truncate">{lesson.question}</span>
+                </div>
+                {isSelected && (
+                  <span className="text-[10px] font-black text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded ml-2 shrink-0">
+                    Active
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Main Learning Workspace */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Sidebar: Levels & Lessons Navigation */}
-        <aside className="lg:col-span-4 flex flex-col gap-4">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 overflow-hidden">
+        {/* Left Desktop Sidebar (Hidden on Mobile) */}
+        <aside className="hidden lg:flex lg:col-span-4 flex-col gap-4">
           {/* Level Switcher Card */}
-          <div className="bg-white rounded-3xl p-4 md:p-5 shadow-xs border border-amber-100">
+          <div className="bg-white rounded-3xl p-5 shadow-xs border border-amber-100">
             <div className="text-[11px] font-black text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
               <span>Choose Your Level</span>
               <span className="text-amber-500 font-bold flex items-center gap-1">
@@ -316,7 +391,7 @@ export default function Home() {
           </div>
 
           {/* Lessons List Card */}
-          <div className="bg-white rounded-3xl p-4 md:p-5 shadow-xs border border-amber-100 flex-1 flex flex-col max-h-[380px] lg:max-h-[520px]">
+          <div className="bg-white rounded-3xl p-5 shadow-xs border border-amber-100 flex-1 flex flex-col max-h-[520px]">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-black text-slate-400 uppercase tracking-wider">
                 {learnerState.current_level} Lesson Quests
@@ -371,8 +446,8 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* Right Area: Interactive Activity & Rich Conversational Chat */}
-        <section className="lg:col-span-8 flex flex-col gap-5">
+        {/* Right Area: Interactive Activity & Conversational Chat */}
+        <section className="lg:col-span-8 flex flex-col gap-3.5 md:gap-5 w-full max-w-full overflow-hidden">
           {/* Active Lesson Interactive Panel */}
           <LearningActivityPanel
             currentLesson={currentLesson}
@@ -387,13 +462,13 @@ export default function Home() {
           />
 
           {/* Chat Container */}
-          <div className="bg-white rounded-3xl p-4 md:p-6 shadow-xs border border-amber-100 flex-1 flex flex-col min-h-[420px] max-h-[540px]">
+          <div className="bg-white rounded-2xl md:rounded-3xl p-3.5 md:p-6 shadow-xs border border-amber-100/90 flex-1 flex flex-col min-h-[380px] max-h-[520px] w-full max-w-full overflow-hidden">
             {/* Mode Bar */}
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-slate-400 font-bold">Companion Mode:</span>
+            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 text-xs w-full">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-slate-400 font-bold text-[11px]">Mode:</span>
                 <span
-                  className={`px-3 py-1 rounded-full font-black text-[11px] shadow-xs border flex items-center gap-1.5 ${
+                  className={`px-2.5 py-0.5 sm:py-1 rounded-full font-black text-[10px] sm:text-[11px] shadow-xs border flex items-center gap-1 shrink-0 ${
                     activeMode === "LEARNING"
                       ? "bg-sky-50 text-sky-800 border-sky-200"
                       : activeMode === "SUPPORT"
@@ -405,70 +480,70 @@ export default function Home() {
                 >
                   {activeMode === "LEARNING" && (
                     <>
-                      <BookOpen className="w-3.5 h-3.5 text-sky-600" />
+                      <BookOpen className="w-3 h-3 text-sky-600" />
                       <span>Learning</span>
                     </>
                   )}
                   {activeMode === "SUPPORT" && (
                     <>
-                      <HeartHandshake className="w-3.5 h-3.5 text-pink-600" />
+                      <HeartHandshake className="w-3 h-3 text-pink-600" />
                       <span>Gentle Support</span>
                     </>
                   )}
                   {activeMode === "ENGAGEMENT" && (
                     <>
-                      <Gamepad2 className="w-3.5 h-3.5 text-amber-600" />
+                      <Gamepad2 className="w-3 h-3 text-amber-600" />
                       <span>Play & Games</span>
                     </>
                   )}
                   {activeMode === "CONVERSATION" && (
                     <>
-                      <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                      <MessageCircle className="w-3 h-3 text-emerald-600" />
                       <span>Chat & Stories</span>
                     </>
                   )}
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 font-medium hidden sm:flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Child-safe zone</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium flex items-center gap-1 shrink-0">
+                <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                <span>Child-safe</span>
               </span>
             </div>
 
             {/* Conversation Messages Area */}
-            <div className="flex-1 overflow-y-auto flex flex-col gap-3.5 pr-2">
+            <div className="flex-1 overflow-y-auto flex flex-col gap-3 pr-1 w-full">
               {messages.map((m) => {
                 const isBot = m.role === "bot";
                 return (
                   <div
                     key={m.id}
-                    className={`flex items-end gap-2.5 animate-pop-in ${
+                    className={`flex items-end gap-2 animate-pop-in w-full ${
                       isBot ? "self-start" : "self-end flex-row-reverse"
                     }`}
                   >
                     {isBot && (
                       <div className="shrink-0 mb-1">
-                        <BuddyMascot mood={mascotMood} size={36} />
+                        <BuddyMascot mood={mascotMood} size={30} />
                       </div>
                     )}
 
                     <div
-                      className={`max-w-[85%] sm:max-w-[75%] p-4 rounded-3xl text-sm leading-relaxed shadow-xs flex flex-col gap-1.5 transition-all ${
+                      className={`max-w-[88%] sm:max-w-[75%] p-3 sm:p-4 rounded-2xl sm:rounded-3xl text-xs sm:text-sm leading-relaxed shadow-xs flex flex-col gap-1 transition-all break-words ${
                         isBot
                           ? m.mode === "SUPPORT"
-                            ? "bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200/80 text-slate-800 rounded-bl-xs"
-                            : "bg-gradient-to-br from-[#F5F9FE] to-sky-50/70 border-2 border-sky-100 text-slate-800 rounded-bl-xs"
+                            ? "bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-200/80 text-slate-800 rounded-bl-xs"
+                            : "bg-gradient-to-br from-[#F5F9FE] to-sky-50/70 border border-sky-100 text-slate-800 rounded-bl-xs"
                           : "bg-gradient-to-r from-sky-600 to-blue-600 text-white rounded-br-xs font-semibold shadow-sm"
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <span className="text-[11px] font-black tracking-wide uppercase opacity-75">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] sm:text-[11px] font-black tracking-wide uppercase opacity-75">
                           {isBot ? "Buddy" : "You"}
                         </span>
                         {isBot && <SpeechButton textToRead={m.text} />}
                       </div>
 
-                      <p className="font-semibold text-slate-800 dark:text-inherit">
+                      <p className="font-semibold text-slate-800 dark:text-inherit break-words">
                         {m.text}
                       </p>
                     </div>
@@ -477,8 +552,8 @@ export default function Home() {
               })}
 
               {loading && (
-                <div className="self-start flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 py-2 px-3.5 rounded-2xl border border-slate-200/60 animate-pulse">
-                  <Loader2 className="w-4 h-4 animate-spin text-sky-600" /> Buddy is thinking...
+                <div className="self-start flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-50 py-1.5 px-3 rounded-xl border border-slate-200/60 animate-pulse">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-600" /> Buddy is thinking...
                 </div>
               )}
 
@@ -486,35 +561,35 @@ export default function Home() {
             </div>
 
             {/* Suggested Quick Replies Pills with Stickers */}
-            <div className="flex items-center gap-2 overflow-x-auto py-2.5 mt-2 border-t border-slate-100">
-              <span className="text-[11px] text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">
-                Quick taps:
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar py-2 mt-1.5 border-t border-slate-100 w-full">
+              <span className="text-[10px] sm:text-[11px] text-slate-400 font-black uppercase tracking-wider whitespace-nowrap">
+                Quick:
               </span>
               <button
                 onClick={() => sendMessage("Let's play a game!")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 text-purple-900 border border-purple-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
+                className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 text-purple-900 border border-purple-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-1.5 shrink-0"
               >
                 <StickerBadge name="game" size="sm" />
-                <span>Play a game!</span>
+                <span>Play!</span>
               </button>
               <button
                 onClick={() => sendMessage("What is a tiger?")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-orange-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
+                className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-orange-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-1.5 shrink-0"
               >
                 <StickerBadge name="animals" size="sm" />
-                <span>Ask about animals</span>
+                <span>Animals</span>
               </button>
               <button
                 onClick={() => sendMessage("I don't understand")}
-                className="text-xs px-3.5 py-1.5 bg-gradient-to-r from-pink-50 to-rose-50 hover:from-pink-100 hover:to-rose-100 text-pink-900 border border-pink-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-2"
+                className="text-[11px] sm:text-xs px-2.5 sm:px-3.5 py-1 sm:py-1.5 bg-gradient-to-r from-pink-50 to-rose-50 hover:from-pink-100 hover:to-rose-100 text-pink-900 border border-pink-200/80 rounded-full font-black whitespace-nowrap transition-transform active:scale-95 shadow-xs flex items-center gap-1.5 shrink-0"
               >
                 <StickerBadge name="hint" size="sm" />
-                <span>I need a hint</span>
+                <span>Hint</span>
               </button>
             </div>
 
             {/* Message Input Box */}
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex items-center gap-1.5 sm:gap-2 w-full">
               <input
                 type="text"
                 value={input}
@@ -522,15 +597,15 @@ export default function Home() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                 placeholder="Type your answer or say hello..."
-                className="flex-1 bg-slate-50/80 border-2 border-slate-200/80 rounded-2xl px-4 py-3.5 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white transition text-slate-800 placeholder-slate-400 shadow-inner"
+                className="flex-1 min-w-0 bg-slate-50/90 border border-slate-200 sm:border-2 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3.5 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white transition text-slate-800 placeholder-slate-400 shadow-inner"
               />
               <button
                 onClick={() => sendMessage()}
                 disabled={loading || !input.trim()}
-                className="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 active:scale-95 text-white font-black px-6 py-3.5 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md text-sm flex items-center gap-2"
+                className="bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 active:scale-95 text-white font-black px-3.5 sm:px-6 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md text-xs sm:text-sm flex items-center gap-1.5 shrink-0"
               >
-                <span>Send</span>
-                <Send className="w-4 h-4" />
+                <span className="hidden xs:inline">Send</span>
+                <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -540,18 +615,18 @@ export default function Home() {
       {/* Reset Confirmation Modal */}
       {showResetModal && (
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-pop-in">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center flex flex-col gap-4">
+          <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-6 max-w-sm w-full shadow-2xl border border-slate-100 text-center flex flex-col gap-3 md:gap-4">
             <div className="flex justify-center">
-              <StickerBadge name="hint" size="xl" className="animate-bounce-subtle" />
+              <StickerBadge name="hint" size="lg" className="animate-bounce-subtle" />
             </div>
-            <h3 className="text-lg font-black text-slate-800">Reset Learning Progress?</h3>
+            <h3 className="text-base md:text-lg font-black text-slate-800">Reset Learning Progress?</h3>
             <p className="text-xs text-slate-500 leading-relaxed font-medium">
               This will clear completed lessons and return your score back to Level 1.
             </p>
-            <div className="flex gap-2.5 justify-center mt-2">
+            <div className="flex gap-2 justify-center mt-1">
               <button
                 onClick={() => setShowResetModal(false)}
-                className="px-4 py-2.5 rounded-xl text-xs font-black text-slate-600 hover:bg-slate-100 transition"
+                className="px-3.5 py-2 rounded-xl text-xs font-black text-slate-600 hover:bg-slate-100 transition"
               >
                 Cancel
               </button>
@@ -560,7 +635,7 @@ export default function Home() {
                   resetState();
                   setShowResetModal(false);
                 }}
-                className="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-xl text-xs font-black hover:from-rose-500 hover:to-red-500 transition shadow-sm"
+                className="px-4 py-2 bg-gradient-to-r from-rose-600 to-red-600 text-white rounded-xl text-xs font-black hover:from-rose-500 hover:to-red-500 transition shadow-sm"
               >
                 Yes, Reset
               </button>

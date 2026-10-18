@@ -10,11 +10,17 @@
   --font-sans: var(--font-poppins);
 }
 
-body {
+/* Enforce zero unwanted horizontal scroll on all screen sizes */
+html, body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-poppins), 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow-x: hidden;
+  overflow-x: hidden !important;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Custom Child-Friendly Micro-Animations */
@@ -74,8 +80,8 @@ body {
 
 /* Custom child-friendly scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -86,4 +92,13 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #CBD5E1;
+}
+
+/* Hide scrollbars for clean app horizontal pills on mobile */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
